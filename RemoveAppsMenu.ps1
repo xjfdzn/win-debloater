@@ -13,20 +13,33 @@ $apps = @{
     7  = @{ Name = "Bing News"; Package = "Microsoft.BingNews" };
     8  = @{ Name = "OneDrive"; Package = "OneDrive" };
     9  = @{ Name = "Paint 3D"; Package = "Microsoft.MSPaint" };
-    10  = @{ Name = "Quick Assist"; Package = "Microsoft.QuickAssist" };
-    11  = @{ Name = "Mixed Reality Portal"; Package = "Microsoft.MixedReality.Portal" };
-    12  = @{ Name = "Power Automate Desktop"; Package = "Microsoft.PowerAutomateDesktop" };
+    10 = @{ Name = "Quick Assist"; Package = "Microsoft.QuickAssist" };
+    11 = @{ Name = "Mixed Reality Portal"; Package = "Microsoft.MixedReality.Portal" };
+    12 = @{ Name = "Power Automate Desktop"; Package = "Microsoft.PowerAutomateDesktop" };
     13 = @{ Name = "Windows Fax and Scan"; Package = "Print.Fax.Scan" };
     14 = @{ Name = "Clipchamp"; Package = "Microsoft.Clipchamp" };
     15 = @{ Name = "OneNote (UWP)"; Package = "Microsoft.Office.OneNote" };
     16 = @{ Name = "Outlook for Windows"; Package = "Microsoft.OutlookForWindows" };
     17 = @{ Name = "People"; Package = "Microsoft.People" };
     18 = @{ Name = "Bing Weather (Clima)"; Package = "Microsoft.BingWeather" };
+    19 = @{ Name = "OpenSSH Client"; Package = "OpenSSH.Client" };
+    20 = @{ Name = "Office 365"; Package = "Microsoft.MicrosoftOfficeHub" };
+    21 = @{ Name = "OneSync"; Package = "OneCoreUAP.OneSync" };
+    22 = @{ Name = "Solitarie Collection"; Package = "Microsoft.MicrosoftSolitarieCollection" };
+    23 = @{ Name = "Notas Auto-Adesivas"; Package = "Microsoft.MicrosoftStickyNotes" };
+    24 = @{ Name = "Bing Search"; Package = "Microsoft.BingSearch" };
+    25 = @{ Name = "Skype"; Package = "Microsoft.SkypeApp" };
+    26 = @{ Name = "Your Phone"; Package = "Microsoft.YourPhone" };
+    27 = @{ Name = "Dev Home"; Package = "Microsoft.Windows.DevHome" };
+    28 = @{ Name = "Mapas"; Package = "Microsoft.WindowsMaps" };
+    29 = @{ Name = "Recall"; Package = "Recall" };
+    30 = @{ Name = "Tips"; Package = "Microsoft.Getstarted" };
+    31 = @{ Name = "Wallet"; Package = "Microsoft.Wallet" };
 
     99 = @{ Name = "Sair"; Package = "" }
 }
 
-# Função para verificar instalação do app
+# Função para verificar se um app está instalado
 function Get-AppStatus {
     param([string]$packageName)
 
@@ -57,7 +70,7 @@ function Get-AppStatus {
     else { return "NAO INSTALADO" }
 }
 
-# Função para remover app
+# Função para remover o app
 function Remove-CustomApp {
     param([string]$packageName)
 
@@ -65,8 +78,8 @@ function Remove-CustomApp {
 
     if ($packageName -eq "OneDrive") {
         Write-Host "Removendo OneDrive..." -ForegroundColor Cyan
-        Start-Process "C:\Windows\System32\OneDriveSetup.exe" -ArgumentList "/uninstall" -Wait
-        Start-Process "C:\Windows\SysWOW64\OneDriveSetup.exe" -ArgumentList "/uninstall" -Wait
+        Start-Process "C:\Windows\System32\OneDriveSetup.exe" -ArgumentList "/uninstall" -Wait -ErrorAction SilentlyContinue
+        Start-Process "C:\Windows\SysWOW64\OneDriveSetup.exe" -ArgumentList "/uninstall" -Wait -ErrorAction SilentlyContinue
         return
     }
 
@@ -84,7 +97,7 @@ function Remove-CustomApp {
         Where-Object { $_.Name -eq $packageName } |
         Remove-AppxPackage -AllUsers -ErrorAction SilentlyContinue
 
-    Write-Host "Concluído!" -ForegroundColor Green
+    Write-Host "Debloat Concluido!" -ForegroundColor Green
 }
 
 # ============================
@@ -95,6 +108,13 @@ while ($true) {
     Write-Host "=== Debloat Windows Apps ===`n" -ForegroundColor Cyan
 
     foreach ($key in $apps.Keys) {
+
+        # Não mostrar status no item 99
+        if ($key -eq 99) {
+            Write-Host ("{0} - {1}" -f $key, $apps[$key].Name) -ForegroundColor Yellow
+            continue
+        }
+
         $pkg = $apps[$key].Package
         $status = Get-AppStatus -packageName $pkg
 
@@ -130,5 +150,5 @@ while ($true) {
     }
 }
 
-Write-Host "`nPressione qualquer tecla para finalizar..."
+Write-Host "`nPressione qualquer tecla para finalizar o programa..."
 [void][System.Console]::ReadKey($true)
